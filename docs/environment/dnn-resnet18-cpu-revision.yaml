@@ -1,0 +1,90 @@
+apiVersion: serving.knative.dev/v1
+kind: Revision
+metadata:
+  annotations:
+    autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
+    autoscaling.knative.dev/max-scale: "4"
+    autoscaling.knative.dev/metric: concurrency
+    autoscaling.knative.dev/min-scale: "0"
+    autoscaling.knative.dev/target: "1"
+    serving.knative.dev/creator: system:admin
+    serving.knative.dev/routes: dnn-resnet18-cpu
+    serving.knative.dev/routingStateModified: "2026-07-26T02:11:21Z"
+  creationTimestamp: "2026-07-26T02:11:21Z"
+  generation: 1
+  labels:
+    serving.knative.dev/configuration: dnn-resnet18-cpu
+    serving.knative.dev/configurationGeneration: "1"
+    serving.knative.dev/configurationUID: 7d5cfccc-51b4-487b-be5a-4c388470529d
+    serving.knative.dev/routingState: active
+    serving.knative.dev/service: dnn-resnet18-cpu
+    serving.knative.dev/serviceUID: 962a71b0-0c6d-4fd9-a1fc-7019d78aee5c
+  name: dnn-resnet18-cpu-00001
+  namespace: default
+  ownerReferences:
+  - apiVersion: serving.knative.dev/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Configuration
+    name: dnn-resnet18-cpu
+    uid: 7d5cfccc-51b4-487b-be5a-4c388470529d
+  resourceVersion: "160676"
+  uid: 53613ac9-e852-4b89-aa1b-3a03e498f9ca
+spec:
+  containerConcurrency: 1
+  containers:
+  - env:
+    - name: DEVICE
+      value: cpu
+    image: local.registry/serverless-dnn-resnet18:cpu-v1
+    imagePullPolicy: Never
+    name: user-container
+    ports:
+    - containerPort: 8080
+      name: http1
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: 8080
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: "2"
+        memory: 2Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    startupProbe:
+      failureThreshold: 90
+      httpGet:
+        path: /readyz
+        port: 8080
+      periodSeconds: 2
+  enableServiceLinks: false
+  timeoutSeconds: 300
+status:
+  actualReplicas: 0
+  conditions:
+  - lastTransitionTime: "2026-07-26T06:13:49Z"
+    message: The target is not receiving traffic.
+    reason: NoTraffic
+    severity: Info
+    status: "False"
+    type: Active
+  - lastTransitionTime: "2026-07-26T02:11:26Z"
+    status: "True"
+    type: ContainerHealthy
+  - lastTransitionTime: "2026-07-26T02:11:26Z"
+    status: "True"
+    type: Ready
+  - lastTransitionTime: "2026-07-26T02:11:26Z"
+    status: "True"
+    type: ResourcesAvailable
+  containerStatuses:
+  - name: user-container
+  desiredReplicas: 0
+  observedGeneration: 1

@@ -1,0 +1,53 @@
+FROM docker.io/pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    MODEL_PATH=/models/resnet18-f37072fd.pth \
+    DEVICE=cuda \
+    PORT=8080
+
+WORKDIR /srv/app
+
+# PyTorch 基础镜像已经包含 torch 2.4.1+cu124。
+# 这里只安装与其匹配的 torchvision，以及 FastAPI 等应用依赖。
+RUN python -m pip install --upgrade pip setuptools wheel && \
+    python -m pip install \
+      torchvision==0.19.1 \
+      --index-url https://download.pytorch.org/whl/cu124
+
+COPY requirements-app.txt /tmp/requirements-app.txt
+
+RUN python -m pip install \
+      -r /tmp/requirements-app.txt
+
+# 将 ResNet18 权重提前放入镜像，避免 Pod 启动时访问互联网。
+RUN mkdir -p /models && \
+    python - <<'PY'
+import hashlib
+import pathlib
+import urllib.request
+
+url = "https://download.pytorch.org/models/resnet18-f37072fd.pth"
+target = pathlib.Path("/models/resnet18-f37072fd.pth")
+expected_prefix = "f37072fd"
+
+urllib.request.urlretrieve(url, target)
+
+digest = hashlib.sha256(target.read_bytes()).hexdigest()
+
+if not digest.startswith(expected_prefix):
+    raise RuntimeError(
+        f"Unexpected model checksum: {digest}; "
+        f"expected prefix {expected_prefix}"
+    )
+
+print(f"Downloaded {target}")
+print(f"sha256={digest}")
+PY
+
+COPY app /srv/app/app
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]

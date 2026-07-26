@@ -1,0 +1,198 @@
+apiVersion: v1
+kind: Node
+metadata:
+  annotations:
+    alpha.kubernetes.io/provided-node-ip: 58.199.161.232,2001:da8:8006:3700:da5e:d3ff:fe00:c162
+    flannel.alpha.coreos.com/backend-data: '{"VNI":1,"VtepMAC":"0e:41:f5:9a:d9:63"}'
+    flannel.alpha.coreos.com/backend-type: vxlan
+    flannel.alpha.coreos.com/kube-subnet-manager: "true"
+    flannel.alpha.coreos.com/public-ip: 58.199.161.232
+    k3s.io/hostname: edgecomputing
+    k3s.io/internal-ip: 58.199.161.232,2001:da8:8006:3700:da5e:d3ff:fe00:c162
+    k3s.io/node-args: '["server","--node-name","edgecomputing","--data-dir","/srv/serverless-llm/k3s","--write-kubeconfig-mode","0640","--write-kubeconfig-group","k3s-admin","--disable","traefik"]'
+    k3s.io/node-config-hash: SYYAWHER56QRVYE53BKWPDV26MOGIDJ6PKM2PWARFTIDBOZVAXWQ====
+    k3s.io/node-env: '{}'
+    node.alpha.kubernetes.io/ttl: "0"
+    volumes.kubernetes.io/controller-managed-attach-detach: "true"
+  creationTimestamp: "2026-07-25T02:20:12Z"
+  finalizers:
+  - wrangler.cattle.io/node
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/instance-type: k3s
+    beta.kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: edgecomputing
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/control-plane: "true"
+    node.kubernetes.io/instance-type: k3s
+  name: edgecomputing
+  resourceVersion: "160914"
+  uid: 651ad50f-7e36-4936-a30e-fe2315f2701c
+spec:
+  podCIDR: 10.42.0.0/24
+  podCIDRs:
+  - 10.42.0.0/24
+  providerID: k3s://edgecomputing
+status:
+  addresses:
+  - address: 58.199.161.232
+    type: InternalIP
+  - address: 2001:da8:8006:3700:da5e:d3ff:fe00:c162
+    type: InternalIP
+  - address: edgecomputing
+    type: Hostname
+  allocatable:
+    cpu: "24"
+    ephemeral-storage: "232115904945"
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 65545088Ki
+    nvidia.com/gpu: "0"
+    pods: "110"
+  capacity:
+    cpu: "24"
+    ephemeral-storage: 238605988Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 65545088Ki
+    nvidia.com/gpu: "2"
+    pods: "110"
+  conditions:
+  - lastHeartbeatTime: "2026-07-26T06:15:26Z"
+    lastTransitionTime: "2026-07-25T02:20:12Z"
+    message: kubelet has sufficient memory available
+    reason: KubeletHasSufficientMemory
+    status: "False"
+    type: MemoryPressure
+  - lastHeartbeatTime: "2026-07-26T06:15:26Z"
+    lastTransitionTime: "2026-07-25T02:20:12Z"
+    message: kubelet has no disk pressure
+    reason: KubeletHasNoDiskPressure
+    status: "False"
+    type: DiskPressure
+  - lastHeartbeatTime: "2026-07-26T06:15:26Z"
+    lastTransitionTime: "2026-07-25T02:20:12Z"
+    message: kubelet has sufficient PID available
+    reason: KubeletHasSufficientPID
+    status: "False"
+    type: PIDPressure
+  - lastHeartbeatTime: "2026-07-26T06:15:26Z"
+    lastTransitionTime: "2026-07-25T02:20:12Z"
+    message: kubelet is posting ready status
+    reason: KubeletReady
+    status: "True"
+    type: Ready
+  daemonEndpoints:
+    kubeletEndpoint:
+      Port: 10250
+  features:
+    supplementalGroupsPolicy: true
+  images:
+  - names:
+    - local.registry/serverless-dnn-resnet18:cpu-v1
+    sizeBytes: 1200378820
+  - names:
+    - nvcr.io/nvidia/k8s-device-plugin@sha256:af31e2b7c7f89834c4e5219860def7ac2e49a207b3d4e8610d5a26772b7738e5
+    - nvcr.io/nvidia/k8s-device-plugin:v0.17.1
+    sizeBytes: 198670519
+  - names:
+    - nvcr.io/nvidia/k8s/cuda-sample@sha256:59261e419d6d48a772aad5bb213f9f1588fcdb042b115ceb7166c89a51f03363
+    - nvcr.io/nvidia/k8s/cuda-sample:nbody
+    sizeBytes: 122383440
+  - names:
+    - docker.io/rancher/local-path-provisioner@sha256:1eba82e9c386038b4af6d69cca7519fac738c28c42735ed48ce70c882ad0d80f
+    - docker.io/rancher/local-path-provisioner:v0.0.36
+    sizeBytes: 89390500
+  - names:
+    - nvcr.io/nvidia/k8s/cuda-sample@sha256:e72dbd0d7e07101c2d2377ee3455e3cc572ff5a71ecf52743a212912e80df62b
+    - nvcr.io/nvidia/k8s/cuda-sample:devicequery-cuda11.7.1-ubuntu20.04
+    sizeBytes: 85613785
+  - names:
+    - docker.io/library/import-2026-07-25@sha256:9ff9ecedf0a829b3d323575e35c0639418d2867f2aefd3d5cbfc911fec1011eb
+    - gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:94329d85200c2fc31ed1166a26568ca1357376c149c147e71f400cf28be3c816
+    - docker.io/library/knative-controller:v1.22.1
+    sizeBytes: 80052505
+  - names:
+    - docker.io/envoyproxy/envoy@sha256:d31dc59fee5498b2852ca1730a535bf0237b7202171c0f5110f9eae4ed413096
+    - docker.io/envoyproxy/envoy:v1.37-latest
+    sizeBytes: 68066735
+  - names:
+    - docker.io/rancher/klipper-helm@sha256:aa6dc50066508ce3940f511c318b810046c4f336c5c5edd3469c2f146a13731b
+    - docker.io/rancher/klipper-helm:v0.10.0-build20260513
+    sizeBytes: 61161558
+  - names:
+    - docker.io/rancher/mirrored-library-traefik@sha256:34d5089d0b414945342848518b383f11f5b3a645504ed87b77ffeb9d683d0e48
+    - docker.io/rancher/mirrored-library-traefik:3.6.13
+    sizeBytes: 52544104
+  - names:
+    - gcr.io/knative-releases/knative.dev/net-kourier/cmd/kourier@sha256:01abd2070ccf8680885c47990e42c05c09e30bc8595d9246f4dcd37f2220a2a2
+    sizeBytes: 23768569
+  - names:
+    - docker.io/rancher/mirrored-coredns-coredns@sha256:b21d26b915e10acb5bc78715c1e8b6047ab2675389b2bcc18b3a6499d90e74c0
+    - docker.io/rancher/mirrored-coredns-coredns:1.14.3
+    sizeBytes: 23543069
+  - names:
+    - docker.io/rancher/mirrored-metrics-server@sha256:b2d2efaf5ac3b366ed0f839d2412a2c4279d4fc2a2a733f12c52133faed36c41
+    - docker.io/rancher/mirrored-metrics-server:v0.8.1
+    sizeBytes: 22550016
+  - names:
+    - gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:5bae38655d87df86b041083fbe51791816473245f752432ba9b85a7b12f73cd5
+    sizeBytes: 21616905
+  - names:
+    - gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:5deaef961fef8d1417f6d4a4dfae2fc338f2d30d72c4ad58c3ab392b2c04705b
+    sizeBytes: 21347676
+  - names:
+    - gcr.io/knative-releases/knative.dev/serving/cmd/webhook@sha256:8470456be214e93a84e3c7b79a632aa9978bd8ecda553feaa47878a2c24ab84d
+    sizeBytes: 21308379
+  - names:
+    - gcr.io/knative-releases/knative.dev/serving/cmd/default-domain@sha256:7532b302ce2f6a3e89a5a4d0341422f0b9cc1f8eb5f1a1cf372075c3bb3ac3e5
+    sizeBytes: 16973939
+  - names:
+    - gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:b1af8bda6c1d32b1cf5fbf8f1f6068c5007a5cebf091039fdea83b88b1fd87f4
+    sizeBytes: 12184063
+  - names:
+    - ghcr.io/knative/helloworld-go:latest
+    sizeBytes: 8810785
+  - names:
+    - docker.io/rancher/klipper-lb@sha256:910944bb0bd94f060a82a56ca1ea1c577d3e49b3473a093a47a985f32e92d94a
+    - docker.io/rancher/klipper-lb:v0.4.17
+    sizeBytes: 5280144
+  - names:
+    - docker.io/rancher/mirrored-library-busybox@sha256:101b4afd76732482eff9b95cae5f94bcf295e521fbec4e01b69c5421f3f3f3e5
+    - docker.io/rancher/mirrored-library-busybox:1.37.0
+    sizeBytes: 2151353
+  - names:
+    - docker.io/rancher/mirrored-pause@sha256:74c4244427b7312c5b901fe0f67cbc53683d06f4f24c6faee65d4182bf0fa893
+    - docker.io/rancher/mirrored-pause:3.6
+    sizeBytes: 301463
+  nodeInfo:
+    architecture: amd64
+    bootID: 1ddbb17e-06ca-4413-9fe7-b11517692386
+    containerRuntimeVersion: containerd://2.2.3-k3s1
+    kernelVersion: 5.4.0-181-generic
+    kubeProxyVersion: ""
+    kubeletVersion: v1.34.8+k3s1
+    machineID: 889cad0fcc3f4f29a6ff859c75fce9a1
+    operatingSystem: linux
+    osImage: Ubuntu 20.04.6 LTS
+    swap:
+      capacity: 42949664768
+    systemUUID: 03000200-0400-0500-0006-000700080009
+  runtimeHandlers:
+  - features:
+      recursiveReadOnlyMounts: false
+      userNamespaces: true
+    name: ""
+  - features:
+      recursiveReadOnlyMounts: false
+      userNamespaces: true
+    name: nvidia
+  - features:
+      recursiveReadOnlyMounts: false
+      userNamespaces: true
+    name: runc
+  - features:
+      recursiveReadOnlyMounts: false
+      userNamespaces: false
+    name: runhcs-wcow-process

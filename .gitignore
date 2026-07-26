@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Experiment results
+results/
+logs/
+*.log
+
+# Docker exported images
+*.tar
+*.tar.gz
+*.tar.gz.part-*
+SHA256SUMS
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+.DS_Store

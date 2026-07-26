@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnn-resnet18-cpu
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dnn-resnet18-cpu
+  template:
+    metadata:
+      labels:
+        app: dnn-resnet18-cpu
+    spec:
+      containers:
+        - name: user-container
+          image: local.registry/serverless-dnn-resnet18:cpu-v1
+          imagePullPolicy: Never
+          env:
+            - name: DEVICE
+              value: cpu
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 90
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnn-resnet18-cpu
+  namespace: default
+spec:
+  selector:
+    app: dnn-resnet18-cpu
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
