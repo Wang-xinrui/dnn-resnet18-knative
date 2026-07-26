@@ -1,0 +1,140 @@
+name: Build ResNet18 GPU Offline Image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  IMAGE_NAME: local.registry/serverless-dnn-resnet18
+  IMAGE_TAG: gpu-v1
+  OUTPUT_PREFIX: serverless-dnn-resnet18-gpu-v1
+
+jobs:
+  build-and-export:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show project files
+        run: |
+          pwd
+          find . -maxdepth 3 -type f | sort
+
+          test -f Dockerfile.gpu
+          test -f requirements-app.txt
+          test -f app/main.py
+
+      - name: Show initial disk space
+        run: |
+          df -h /
+          docker system df || true
+
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /opt/hostedtoolcache || true
+
+          sudo apt-get clean
+          docker system prune -af || true
+
+          echo "===== Disk after cleanup ====="
+          df -h /
+
+      - name: Build GPU image
+        env:
+          DOCKER_BUILDKIT: "1"
+        run: |
+          set -euo pipefail
+
+          docker build \
+            --platform linux/amd64 \
+            --file Dockerfile.gpu \
+            --tag "${IMAGE_NAME}:${IMAGE_TAG}" \
+            .
+
+          echo "===== Built image ====="
+          docker image inspect "${IMAGE_NAME}:${IMAGE_TAG}"
+          docker image ls "${IMAGE_NAME}:${IMAGE_TAG}"
+
+          echo "===== Disk after build ====="
+          df -h /
+
+      - name: Validate image contents
+        run: |
+          set -euo pipefail
+
+          docker run --rm \
+            --entrypoint python \
+            "${IMAGE_NAME}:${IMAGE_TAG}" \
+            -c '
+          import os
+          import torch
+          import torchvision
+
+          print("torch:", torch.__version__)
+          print("torchvision:", torchvision.__version__)
+          print("compiled CUDA:", torch.version.cuda)
+          print(
+              "model exists:",
+              os.path.exists("/models/resnet18-f37072fd.pth")
+          )
+
+          assert torch.__version__.startswith("2.4.1")
+          assert torchvision.__version__.startswith("0.19.1")
+          assert torch.version.cuda == "12.4"
+          assert os.path.exists("/models/resnet18-f37072fd.pth")
+
+          print("IMAGE CONTENT TEST PASSED")
+          '
+
+      - name: Stream compress and split image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker image save "${IMAGE_NAME}:${IMAGE_TAG}" \
+            | gzip -1 \
+            | split \
+                -b 1800M \
+                -d \
+                -a 3 \
+                - \
+                "${OUTPUT_PREFIX}.tar.gz.part-"
+
+          sha256sum "${OUTPUT_PREFIX}.tar.gz.part-"* \
+            > SHA256SUMS
+
+          echo "===== Exported files ====="
+          ls -lh "${OUTPUT_PREFIX}.tar.gz.part-"*
+          cat SHA256SUMS
+
+          echo "===== Final disk space ====="
+          df -h /
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          RELEASE_TAG="resnet18-gpu-v1"
+
+          gh release delete "${RELEASE_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --cleanup-tag \
+            --yes || true
+
+          gh release create "${RELEASE_TAG}" \
+            "${OUTPUT_PREFIX}.tar.gz.part-"* \
+            SHA256SUMS \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${GITHUB_SHA}" \
+            --title "ResNet18 GPU Image v1" \
+            --notes "CUDA 12.4 ResNet18 GPU image for offline K3s import."
